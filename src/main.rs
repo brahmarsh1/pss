@@ -1,10 +1,12 @@
-use pss::chandas::{Matra};
+use pss::chandas::{Maatra};
 
 fn main() {
-    let laghu = Matra::laghu();
-    let guru = Matra::guru();
+    let laghu = Maatra::laghu();
+    let guru = Maatra::guru();
+    let pluta = Maatra::pluta();
 
-    println!("Laghu Matra: {:?} (1 Kaala)", laghu);
-    println!("Guru Matra: {:?} (2 Kaala)", guru);
+    println!("Laghu Maatra: {:?} (1 Kaala)", laghu);
+    println!("Guru Maatra: {:?} (2 Kaala)", guru);
+    println!("Pluta Maatra: {:?} (3 Kaala)", pluta);
 }
 
