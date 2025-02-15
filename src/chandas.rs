@@ -29,24 +29,24 @@ impl Maatra {
     }
 }
 
-/// Sabda represents a grouping of Mātrās forming a word or syllabic unit.
+/// Gana represents a grouping of Mātrās forming a word or syllabic unit.
 #[derive(Debug, PartialEq, Eq)]
-pub struct Sabda {
+pub struct Gana {
     pub maatras: Vec<Maatra>,
 }
 
-impl Sabda {
-    /// Creates a new Sabda from a vector of Mātrās.
+impl Gana {
+    /// Creates a new Gana from a vector of Mātrās.
     pub fn new(maatras: Vec<Maatra>) -> Self {
-        Sabda { maatras }
+        Gana { maatras }
     }
 
-    /// Appends a Mātra to the existing Sabda.
+    /// Appends a Mātra to the existing Gana.
     pub fn push(&mut self, maatra: Maatra) {
         self.maatras.push(maatra);
     }
 
-    /// Returns the total Kaala count of the Sabda.
+    /// Returns the total Kaala count of the Gana.
     pub fn total_kaala(&self) -> u32 {
         self.maatras.iter().map(|m| {
             match m.length {

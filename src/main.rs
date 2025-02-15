@@ -1,4 +1,4 @@
-use pss::chandas::{Maatra, Sabda};
+use pss::chandas::{Maatra, Gana};
 
 fn main() {
     let laghu = Maatra::laghu();
@@ -10,9 +10,9 @@ fn main() {
     println!("Pluta Maatra: {:?} (3 Kaala)", pluta);
 
     // Create a Sabda consisting of a Laghu followed by a Guru
-    let sabda = Sabda::new(vec![Maatra::laghu(), Maatra::guru()]);
+    let Gana = Gana::new(vec![Maatra::laghu(), Maatra::guru()]);
     
-    println!("Sabda: {:?}", sabda);
-    println!("Total Kaala: {}", sabda.total_kaala());
+    println!("Gana: {:?}", Gana);
+    println!("Total Kaala: {}", Gana.total_kaala());
 }
 
