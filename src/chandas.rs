@@ -1,4 +1,6 @@
+pub mod chandas;
 /// Kaala represents a unit of metrical time.
+ 
 #[derive(Debug, PartialEq, Eq)]
 pub enum Kaala {
     One,   // Laghu (1 Kaala unit)

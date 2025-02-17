@@ -1,23 +1,35 @@
-mod shiksha;
-
-use shiksha::{Shiksha, Varna};
+use std::io::{self, Write};
+mod lexer; 
 
 fn main() {
-    // Get Sanskrit vowels and consonants
-    let vowels = Shiksha::swaras();
-    let consonants = Shiksha::sparshas();
+    println!("Sri Maatre NamaH. Type 'exit' to quit.");
 
-    println!("Sanskrit Vowels:");
-    for varna in &vowels {
-        if let Varna::Swara(devanagari, unicode) = varna {
-            println!("{} -> Unicode: {}", devanagari, unicode);
-        }
-    }
+    loop {
+        print!("==> "); 
+        io::stdout().flush().unwrap(); // Ensure prompt appears before input
 
-    println!("\nSanskrit Consonants:");
-    for varna in &consonants {
-        if let Varna::Sparsha(devanagari, unicode) = varna {
-            println!("{} -> Unicode: {}", devanagari, unicode);
+        let mut input = String::new();
+        
+        match io::stdin().read_line(&mut input) {
+            Ok(n) => {
+                if n == 0 {
+                    break;
+                }
+                let trimmed = input.trim();
+                if trimmed.eq_ignore_ascii_case("exit") {
+                    break;
+                }
+
+                // Tokenize input using lexer
+                let lexed_tokens = lexer::Lexer::new(trimmed).tokenize();
+                
+                // Print the lexed output
+                println!("Lexed Output: {:?}", lexed_tokens);
+            }
+            Err(err) => {
+                println!("Error reading input: {}", err);
+                break;
+            }
         }
     }
 }
