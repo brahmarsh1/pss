@@ -1,4 +1,4 @@
-use crate::chandas::Kaala;
+use crate::chandas::{Kaala};
 
 /// `Maatra` represents a single metrical unit (Laghu, Guru, or Pluta).
 #[derive(Debug, PartialEq, Eq)]
@@ -10,7 +10,7 @@ impl Maatra {
     // Creates a new Laghu (1 Kaala unit).
     pub fn laghu() -> Self {
         Maatra { length: Kaala::One }
-    
+    }    
 
     /// Creates a new Guru (2 Kaala units).
     pub fn guru() -> Self {

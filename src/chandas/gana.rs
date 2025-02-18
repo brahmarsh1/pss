@@ -1,4 +1,4 @@
-use crate::chandas::Maatra;
+use crate::chandas::{Maatra,Kaala};
 
 /// `Gana` represents a grouping of Mātrās forming a word or syllabic unit.
 #[derive(Debug, PartialEq, Eq)]
