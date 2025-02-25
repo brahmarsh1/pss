@@ -1,5 +1,5 @@
 use std::io::{self, Write};
-mod lexer;
+mod niruktam;
 mod shiksha;
 mod chandas;
 
@@ -34,7 +34,7 @@ fn process_input(input: &str) {
     }
 
     // Tokenize input using lexer
-    let lexed_tokens = lexer::Lexer::new(input).tokenize();
+    let lexed_tokens = niruktam::Lexer::new(input).tokenize();
 
     // Print the lexed output
     println!("Lexed Output: {:?}", lexed_tokens);
