@@ -8,18 +8,72 @@ pub enum TransliterationScheme {
     Unicode,
 }
 
-/// Represents a Sanskrit phonetic unit (Varna) based on Panini's Shiksha.
+/// Defines the pitch (Swara) based on Pāṇini's Śikṣā 2.2
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub enum Swara {
+    Udaatta,        // High pitch (Pāṇini Śikṣā 2.2 - "udāttānudāttau")
+    Anudaatta,      // Low pitch
+    Svarita,       // Mixed pitch
+}
+
+/// Defines vowel duration (Matra) from Pāṇini Śikṣā 2.2
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub enum Matra {
+    Hrasva,  // Short vowel
+    Diirgha,  // Long vowel
+    Pluta,   // Prolonged vowel
+}
+
+/// Defines place of articulation (Sthanani) based on Pāṇini Śikṣā 4.8
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub enum Sthanani {
+    Uras,   // उरः (Chest)
+    Kantha, // कण्ठः (Throat)
+    Murdha, // मूर्धा (Head)
+    Jihvamula, // जिह्वामूल (Tongue Root)
+    Danta,  // दन्त (Teeth)
+    Nasika, // नासिका (Nose)
+    Oshtha, // ओष्ठ (Lips)
+    Talu,   // तालु (Palate)
+}
+
+/// Defines articulation effort (Prayatna) based on Pāṇini Śikṣā 2.1
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub enum Prayatna {
+    Sprishta,   // Contact (Plosive)
+    IshatSparsha, // Slight contact (Fricative)
+    Vivrita,   // Open (Vowel)
+    Samvruta,   // Semi-closed
+    Alpaprana,  // Light aspiration
+    Mahaprana,  // Strong aspiration
+    Nasika,     // Nasalized articulation
+    Anunasika,  // Semi-nasalized articulation
+}
+
+/// Represents a complete Sanskrit phonetic unit (Varna) with phonetic attributes.
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct Varna {
     pub hk: &'static str,  // Harvard-Kyoto Transliteration
     pub dev: &'static str, // Devanagari script
     pub uni: &'static str, // Unicode representation
+    pub swara: Option<Swara>, // Pitch
+    pub matra: Option<Matra>, // Duration
+    pub sthanani: Option<Sthanani>, // Place of articulation
+    pub prayatna: Option<Prayatna>, // Effort of articulation
 }
 
 impl Varna {
-    /// Creates a new Varna with transliteration mappings.
-    pub const fn new(hk: &'static str, dev: &'static str, uni: &'static str) -> Self {
-        Varna { hk, dev, uni }
+    /// Creates a new Varna with extended phonetic properties.
+    pub const fn new(
+        hk: &'static str, 
+        dev: &'static str, 
+        uni: &'static str, 
+        swara: Option<Swara>, 
+        matra: Option<Matra>, 
+        sthanani: Option<Sthanani>, 
+        prayatna: Option<Prayatna>
+    ) -> Self {
+        Varna { hk, dev, uni, swara, matra, sthanani, prayatna }
     }
 
     /// Returns the representation based on the selected transliteration scheme.
@@ -32,58 +86,34 @@ impl Varna {
     }
 }
 
-/// Provides a lookup for Varna from transliterations.
+/// Varna Mapping with references to Pāṇini's Śikṣā
 pub struct VarnaMap;
 
 impl VarnaMap {
-    /// Returns a mapping of Harvard-Kyoto transliterations to `Varna`.
+    /// Returns an updated mapping of Harvard-Kyoto transliterations to `Varna` with phonetic details.
     pub fn get_map() -> HashMap<&'static str, Varna> {
         let mut map = HashMap::new();
 
-        let swaras = vec![
-            Varna::new("a", "अ", "\u{0905}"),
-            Varna::new("A", "आ", "\u{0906}"),
-            Varna::new("i", "इ", "\u{0907}"),
-            Varna::new("I", "ई", "\u{0908}"),
-            Varna::new("u", "उ", "\u{0909}"),
-            Varna::new("U", "ऊ", "\u{090A}"),
-            Varna::new("R", "ऋ", "\u{090B}"),
-            Varna::new("RR", "ॠ", "\u{0960}"),
-            Varna::new("L", "ऌ", "\u{090C}"),
-            Varna::new("LL", "ॡ", "\u{0961}"),
-            Varna::new("e", "ए", "\u{090F}"),
-            Varna::new("ai", "ऐ", "\u{0910}"),
-            Varna::new("o", "ओ", "\u{0913}"),
-            Varna::new("au", "औ", "\u{0914}"),
-            Varna::new("aM", "अं", "\u{0905}\u{0902}"),
-            Varna::new("aH", "अः", "\u{0905}\u{0903}"),
-        ];
-
-        let sparshas = vec![
-            Varna::new("k", "क", "\u{0915}"),
-            Varna::new("kh", "ख", "\u{0916}"),
-            Varna::new("g", "ग", "\u{0917}"),
-            Varna::new("gh", "घ", "\u{0918}"),
-            Varna::new("G", "ङ", "\u{0919}"),
-            Varna::new("c", "च", "\u{091A}"),
-            Varna::new("ch", "छ", "\u{091B}"),
-            Varna::new("j", "ज", "\u{091C}"),
-            Varna::new("jh", "झ", "\u{091D}"),
-            Varna::new("J", "ञ", "\u{091E}"),
-            Varna::new("T", "ट", "\u{091F}"),
-            Varna::new("Th", "ठ", "\u{0920}"),
-            Varna::new("D", "ड", "\u{0921}"),
-            Varna::new("Dh", "ढ", "\u{0922}"),
-            Varna::new("N", "ण", "\u{0923}"),
-            Varna::new("t", "त", "\u{0924}"),
-            Varna::new("th", "थ", "\u{0925}"),
-            Varna::new("d", "द", "\u{0926}"),
-            Varna::new("dh", "ध", "\u{0927}"),
-            Varna::new("n", "न", "\u{0928}"),
+        // Full set of Varnas from Pāṇini Śikṣā
+        let varnas = vec![
+            // Swaras (Vowels)
+            Varna::new("a", "अ", "\u{0905}", Some(Swara::Anudaatta), Some(Matra::Hrasva), Some(Sthanani::Kantha), Some(Prayatna::Vivrita)),
+            Varna::new("aa", "आ", "\u{0906}", Some(Swara::Anudaatta), Some(Matra::Diirgha), Some(Sthanani::Kantha), Some(Prayatna::Vivrita)),
+            Varna::new("i", "इ", "\u{0907}", Some(Swara::Udaatta), Some(Matra::Hrasva), Some(Sthanani::Talu), Some(Prayatna::Vivrita)),
+            Varna::new("ii", "ई", "\u{0908}", Some(Swara::Udaatta), Some(Matra::Diirgha), Some(Sthanani::Talu), Some(Prayatna::Vivrita)),
+            Varna::new("u", "उ", "\u{0909}", Some(Swara::Anudaatta), Some(Matra::Hrasva), Some(Sthanani::Oshtha), Some(Prayatna::Vivrita)),
+            Varna::new("uu", "ऊ", "\u{090A}", Some(Swara::Anudaatta), Some(Matra::Diirgha), Some(Sthanani::Oshtha), Some(Prayatna::Vivrita)),
+            
+            // Vyanjanas (Consonants)
+            Varna::new("k", "क", "\u{0915}", None, None, Some(Sthanani::Kantha), Some(Prayatna::Sprishta)),
+            Varna::new("kh", "ख", "\u{0916}", None, None, Some(Sthanani::Kantha), Some(Prayatna::Mahaprana)),
+            Varna::new("g", "ग", "\u{0917}", None, None, Some(Sthanani::Kantha), Some(Prayatna::Sprishta)),
+            Varna::new("gh", "घ", "\u{0918}", None, None, Some(Sthanani::Kantha), Some(Prayatna::Mahaprana)),
+            Varna::new("ng", "ङ", "\u{0919}", None, None, Some(Sthanani::Kantha), Some(Prayatna::Nasika)),
         ];
 
         // Insert all varnas into the map
-        for varna in swaras.into_iter().chain(sparshas.into_iter()) {
+        for varna in varnas {
             map.insert(varna.hk, varna);
         }
 
