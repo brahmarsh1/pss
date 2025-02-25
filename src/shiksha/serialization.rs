@@ -1,7 +1,8 @@
-use crate::shiksha::{Varna, Swara, SamaSvara, Matra, Sthanani, Prayatna};
+use crate::shiksha::{Varna, Akshara};
 use serde::{Serialize, Deserialize};
+use std::collections::HashMap;
 
-/// JSON Serialization Structure
+/// JSON Serialization Structure for Varna
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SerializedVarna {
     pub hk: String,
@@ -17,14 +18,14 @@ pub struct SerializedVarna {
 /// Converts a Varna to a Serializable JSON Struct
 pub fn serialize_varna(varna: &Varna) -> SerializedVarna {
     SerializedVarna {
-        hk: varna.hk.to_string(),  // Ensure Harvard-Kyoto transliteration
+        hk: varna.hk.to_string(),
         dev: varna.dev.to_string(),
         unicode: varna.uni.to_string(),
-        swara: varna.swara.map(|s| format!("{:?}", s)), 
-        sama_svara: varna.sama_svara.map(|s| format!("{:?}", s)),
-        matra: varna.matra.map(|m| format!("{:?}", m)),
-        sthanani: varna.sthanani.map(|s| format!("{:?}", s)),
-        prayatna: varna.prayatna.map(|p| format!("{:?}", p)),
+        swara: varna.swara.clone(),
+        sama_svara: varna.sama_svara.clone(),
+        matra: varna.matra.clone(),
+        sthanani: varna.sthanani.clone(),
+        prayatna: varna.prayatna.clone(),
     }
 }
 
@@ -34,47 +35,71 @@ pub fn deserialize_varna(serialized: &SerializedVarna) -> Varna {
         &serialized.hk,
         &serialized.dev,
         &serialized.unicode,
-        serialized.swara.as_deref().map(|s| match s {
-            "Udaatta" => Swara::Udaatta,
-            "Anudaatta" => Swara::Anudaatta,
-            _ => Swara::Svarita,
-        }),
-        serialized.sama_svara.as_deref().map(|s| match s {
-            "Sa" => SamaSvara::Sa,
-            "Re" => SamaSvara::Re,
-            "Ga" => SamaSvara::Ga,
-            "Ma" => SamaSvara::Ma,
-            "Pa" => SamaSvara::Pa,
-            "Dha" => SamaSvara::Dha,
-            "Ni" => SamaSvara::Ni,
-            _ => SamaSvara::Sa,
-        }),
-        serialized.matra.as_deref().map(|m| match m {
-            "Hrasva" => Matra::Hrasva,
-            "Diirgha" => Matra::Diirgha,
-            "Pluta" => Matra::Pluta,
-            _ => Matra::Hrasva,
-        }),
-        serialized.sthanani.as_deref().map(|s| match s {
-            "Kantha" => Sthanani::Kantha,
-            "Talu" => Sthanani::Talu,
-            "Murdha" => Sthanani::Murdha,
-            "Jihvamula" => Sthanani::Jihvamula,
-            "Danta" => Sthanani::Danta,
-            "Nasika" => Sthanani::Nasika,
-            "Oshtha" => Sthanani::Oshtha,
-            _ => Sthanani::Kantha,
-        }),
-        serialized.prayatna.as_deref().map(|p| match p {
-            "Sprishta" => Prayatna::Sprishta,
-            "IshatSparsha" => Prayatna::IshatSparsha,
-            "Vivrita" => Prayatna::Vivrita,
-            "Samvruta" => Prayatna::Samvruta,
-            "Alpaprana" => Prayatna::Alpaprana,
-            "Mahaprana" => Prayatna::Mahaprana,
-            "Nasika" => Prayatna::Nasika,
-            "Anunasika" => Prayatna::Anunasika,
-            _ => Prayatna::Vivrita,
-        }),
+        serialized.swara.clone(),
+        serialized.sama_svara.clone(),
+        serialized.matra.clone(),
+        serialized.sthanani.clone(),
+        serialized.prayatna.clone(),
     )
+}
+
+/// JSON Serialization Structure for Akshara
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SerializedAkshara {
+    pub varnas: Vec<SerializedVarna>,
+    pub swara: Option<String>,
+    pub sama_svara: Option<String>,
+    pub matra: Option<String>,
+}
+
+/// Converts an Akshara to a Serializable JSON Struct
+pub fn serialize_akshara(akshara: &Akshara) -> SerializedAkshara {
+    SerializedAkshara {
+        varnas: akshara.varnas.iter().map(serialize_varna).collect(),
+        swara: akshara.swara.clone(),
+        sama_svara: akshara.sama_svara.clone(),
+        matra: akshara.matra.clone(),
+    }
+}
+
+/// Converts a SerializedAkshara back to Akshara
+pub fn deserialize_akshara(serialized: &SerializedAkshara) -> Option<Akshara> {
+    let varnas: Vec<Varna> = serialized.varnas.iter().map(deserialize_varna).collect();
+    Akshara::new(varnas)
+}
+
+/// JSON Serialization Structure for Pada
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SerializedPada {
+    pub aksharas: Vec<SerializedAkshara>,
+}
+
+/// Converts a SerializedPada back to Pada
+pub fn deserialize_pada(serialized: &SerializedPada) -> Pada {
+    let aksharas = serialized.aksharas.iter().filter_map(deserialize_akshara).collect();
+    Pada::new(aksharas)
+}
+
+/// JSON Serialization Structure for Vaakya
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SerializedVaakya {
+    pub padas: Vec<SerializedPada>,
+}
+
+/// Converts a SerializedVaakya back to Vaakya
+pub fn deserialize_vaakya(serialized: &SerializedVaakya) -> Vaakya {
+    let padas = serialized.padas.iter().map(deserialize_pada).collect();
+    Vaakya::new(padas)
+}
+
+/// JSON Serialization Structure for Sutra
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SerializedSutra {
+    pub varnas: HashMap<String, SerializedVarna>,
+}
+
+/// Converts a SerializedSutra back to Sutra
+pub fn deserialize_sutra(serialized: &SerializedSutra) -> Sutra {
+    let varnas = serialized.varnas.iter().map(|(_, v)| deserialize_varna(v)).collect();
+    Sutra::new(varnas)
 }
