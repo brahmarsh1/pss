@@ -1,7 +1,7 @@
-use crate::shiksha::Varna;
+use crate::shiksha::{Varna, Swara, SamaSvara, Matra};
 
 /// Defines an Akshara (Syllable) as an array of Varnas
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Akshara {
     pub varnas: Vec<Varna>, // An Akshara consists of multiple Varnas
     pub swara: Option<String>, // Unified Swara
@@ -16,15 +16,15 @@ impl Akshara {
             return None;
         }
 
-        // Extract and unify Swara, Sama Svara, Matra
-        let first_swara = varnas[0].swara.clone();
-        let first_sama_svara = varnas[0].sama_svara.clone();
-        let first_matra = varnas[0].matra.clone();
+        // Extract first Swara, Sama Svara, and Matra as Strings
+        let first_swara = varnas[0].swara.as_ref().map(|s| format!("{:?}", s));
+        let first_sama_svara = varnas[0].sama_svara.as_ref().map(|s| format!("{:?}", s));
+        let first_matra = varnas[0].matra.as_ref().map(|m| format!("{:?}", m));
 
         // Check for consistency across all Varnas
-        let all_swara_match = varnas.iter().all(|v| v.swara == first_swara);
-        let all_sama_svara_match = varnas.iter().all(|v| v.sama_svara == first_sama_svara);
-        let all_matra_match = varnas.iter().all(|v| v.matra == first_matra);
+        let all_swara_match = varnas.iter().all(|v| v.swara.as_ref().map(|s| format!("{:?}", s)) == first_swara);
+        let all_sama_svara_match = varnas.iter().all(|v| v.sama_svara.as_ref().map(|s| format!("{:?}", s)) == first_sama_svara);
+        let all_matra_match = varnas.iter().all(|v| v.matra.as_ref().map(|m| format!("{:?}", m)) == first_matra);
 
         if all_swara_match && all_sama_svara_match && all_matra_match {
             Some(Self {
