@@ -1,19 +1,19 @@
-use crate::shiksha::varna::Varna;
+use crate::shiksha::Varna;
 
-/// Represents a Sanskrit syllable or phonetic unit composed of Varnas.
-#[derive(Debug, PartialEq, Eq)]
+/// Defines an Akshara (Syllable) as an array of Varnas
+#[derive(Debug, Clone)]
 pub struct Akshara {
-    pub varnas: Vec<Varna>,
+    pub varnas: Vec<Varna>, // An Akshara consists of multiple Varnas
 }
 
 impl Akshara {
-    /// Creates a new Akshara from a sequence of Varnas.
+    /// Creates a new Akshara from a list of Varnas
     pub fn new(varnas: Vec<Varna>) -> Self {
         Akshara { varnas }
     }
 
-    /// Returns the transliteration of the Akshara.
-    pub fn transliterate(&self, scheme: super::varna::TransliterationScheme) -> String {
-        self.varnas.iter().map(|v| v.transliterate(scheme)).collect()
+    /// Returns the transliteration of the Akshara using Harvard-Kyoto scheme
+    pub fn transliterate(&self) -> String {
+        self.varnas.iter().map(|v| v.hk).collect::<String>()
     }
 }
