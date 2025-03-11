@@ -1,7 +1,7 @@
 use crate::chandas::{Kaala};
 
 /// `Maatra` represents a single metrical unit (Laghu, Guru, or Pluta).
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Clone,Debug, PartialEq, Eq)]
 pub struct Maatra {
     pub length: Kaala,
 }
